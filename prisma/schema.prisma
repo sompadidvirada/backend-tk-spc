@@ -1,0 +1,308 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model branch {
+  id                      Int                                    @id @unique @default(autoincrement())
+  name                    String
+  phonenumber             String?
+  province                String
+  location                Unsupported("geography(Point, 4326)")?
+  available               Boolean                                @default(true)
+  available_bakery_branch available_bakery_branch[]
+  track_bakery_sell       track_bakery_sell[]
+  track_bakery_send       track_bakery_send[]
+  track_bakery_exp        track_bakery_exp[]
+  order_bakery            order_bakery[]
+  confirm_order_bakery    confirm_order_bakery[]
+  staff_office            staff_office[]
+  track_image_bakery      track_image_bakery[]
+  baristar_report         baristar_report[]
+  stock_requisition       stock_requisition[]
+}
+
+model staff_office {
+  id                           Int                            @id @unique @default(autoincrement())
+  name                         String
+  password                     String                         @default("123")
+  phonenumber                  String                         @unique
+  role                         Role                           @default(STAFF_SPC)
+  birthdate                    DateTime?
+  image                        String?
+  available                    Boolean                        @default(true)
+  branch                       branch?                        @relation(fields: [branchId], references: [id])
+  branchId                     Int?
+  baristar_report              baristar_report[]
+  baristar_report_notification baristar_report_notification[]
+  calendar_order               calendar_order[]
+}
+
+model bakery_category {
+  id            Int             @id @unique @default(autoincrement())
+  name          String
+  bakery_detail bakery_detail[]
+}
+
+model bakery_detail {
+  id                      Int                       @id @unique @default(autoincrement())
+  name                    String
+  price                   Int
+  sell_price              Int
+  status                  String                    @default("B")
+  bakeryCategory          bakery_category           @relation(fields: [bakery_categoryId], references: [id])
+  bakery_categoryId       Int
+  image                   String?
+  available_bakery_branch available_bakery_branch[]
+  track_bakery_sell       track_bakery_sell[]
+  track_bakery_send       track_bakery_send[]
+  track_bakery_exp        track_bakery_exp[]
+  order_bakery            order_bakery[]
+  baristar_report         baristar_report[]
+  supplyer_bakery         supplyer_bakery?          @relation(fields: [supplyer_bakeryId], references: [id])
+  supplyer_bakeryId       Int?
+}
+
+model supplyer_bakery {
+  id            Int             @id @unique @default(autoincrement())
+  name          String
+  order_range   Int             @default(3)
+  image         String?
+  bakery_detail bakery_detail[]
+}
+
+model available_bakery_branch {
+  id              Int           @id @unique @default(autoincrement())
+  branch          branch        @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  branchId        Int
+  bakery_detail   bakery_detail @relation(fields: [bakery_detailId], references: [id], onDelete: Cascade)
+  bakery_detailId Int
+
+  @@unique([bakery_detailId, branchId])
+}
+
+model track_bakery_sell {
+  id              Int           @id @unique @default(autoincrement())
+  quantity        Int
+  sold_at         DateTime
+  bakery_detail   bakery_detail @relation(fields: [bakery_detailId], references: [id], onDelete: Cascade)
+  bakery_detailId Int
+  branch          branch        @relation(fields: [branchId], references: [id])
+  branchId        Int
+  price           Int
+  sell_price      Int
+
+  @@unique([bakery_detailId, sold_at, branchId])
+}
+
+model track_bakery_send {
+  id              Int           @id @unique @default(autoincrement())
+  quantity        Int
+  send_at         DateTime
+  bakery_detail   bakery_detail @relation(fields: [bakery_detailId], references: [id], onDelete: Cascade)
+  bakery_detailId Int
+  branch          branch        @relation(fields: [branchId], references: [id])
+  branchId        Int
+  price           Int
+  sell_price      Int
+
+  @@unique([bakery_detailId, send_at, branchId])
+}
+
+model track_bakery_exp {
+  id              Int           @id @unique @default(autoincrement())
+  quantity        Int
+  exp_at          DateTime
+  bakery_detail   bakery_detail @relation(fields: [bakery_detailId], references: [id], onDelete: Cascade)
+  bakery_detailId Int
+  branch          branch        @relation(fields: [branchId], references: [id])
+  branchId        Int
+  price           Int
+  sell_price      Int
+
+  @@unique([bakery_detailId, exp_at, branchId])
+}
+
+model order_bakery {
+  id         Int      @id @unique @default(autoincrement())
+  order_set  Int
+  order_want Int      @default(0)
+  order_at   DateTime
+
+  bakery_detail   bakery_detail @relation(fields: [bakery_detailId], references: [id], onDelete: Cascade)
+  bakery_detailId Int
+  branch          branch        @relation(fields: [branchId], references: [id])
+  branchId        Int
+
+  @@unique([order_at, branchId, bakery_detailId])
+}
+
+model confirm_order_bakery {
+  id                   Int      @id @unique @default(autoincrement())
+  confirm_date         DateTime
+  baristar_confirm_stt Boolean
+  admin_confirm_stt    Boolean
+  branch               branch   @relation(fields: [branchId], references: [id])
+  branchId             Int
+
+  @@unique([branchId, confirm_date])
+}
+
+model track_image_bakery {
+  id         Int      @id @unique @default(autoincrement())
+  track_date DateTime
+  image_name String
+  branch     branch   @relation(fields: [branchId], references: [id])
+  branchId   Int
+}
+
+model baristar_report {
+  id           Int      @id @unique @default(autoincrement())
+  report_date  DateTime
+  title        String
+  descriptoion String
+
+  bakery_detail                bakery_detail                  @relation(fields: [bakery_detailId], references: [id], onDelete: Cascade)
+  bakery_detailId              Int
+  branch                       branch                         @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  branchId                     Int
+  staff_office                 staff_office?                  @relation(fields: [staff_officeId], references: [id], onDelete: Cascade)
+  staff_officeId               Int?
+  status                       Boolean                        @default(false)
+  baristar_images_report       baristar_images_report[]
+  baristar_report_notification baristar_report_notification[]
+}
+
+model baristar_images_report {
+  id    Int    @id @unique @default(autoincrement())
+  image String
+
+  baristar_report   baristar_report @relation(fields: [baristar_reportId], references: [id], onDelete: Cascade)
+  baristar_reportId Int
+}
+
+model baristar_report_notification {
+  id                Int             @id @unique @default(autoincrement())
+  reacd_at          DateTime        @default(now())
+  baristar_report   baristar_report @relation(fields: [baristar_reportId], references: [id], onDelete: Cascade)
+  baristar_reportId Int
+  staff_office      staff_office    @relation(fields: [staff_officeId], references: [id], onDelete: Cascade)
+  staff_officeId    Int
+}
+
+model material {
+  id                  Int               @id @unique @default(autoincrement())
+  name                String
+  descriptions        String?
+  material_variant    materialVariant[]
+  category_material   category_material @relation(fields: [category_materialId], references: [id])
+  category_materialId Int
+  min_order           Int               @default(60)
+  image               String
+  supplierSpc         supplier_spc?     @relation(fields: [supplier_spcId], references: [id])
+  supplier_spcId      String?
+}
+
+model category_material {
+  id       Int        @id @unique @default(autoincrement())
+  name     String
+  material material[]
+}
+
+model materialVariant {
+  id                 Int                 @id @unique @default(autoincrement())
+  variant_name       String
+  material           material            @relation(fields: [materialId], references: [id], onDelete: Cascade)
+  materialId         Int
+  barcode            String?             @unique
+  price_kip          Float?
+  sell_price_kip     Float?
+  price_bath         Float?
+  sell_price_bath    Float?
+  quantity_in_parent Int?
+  parent_variantId   Int?
+  parentVariant      materialVariant?    @relation("Variant_parent", fields: [parent_variantId], references: [id], onDelete: Cascade)
+  childVariants      materialVariant[]   @relation("Variant_parent")
+  conver_to_base     Float               @default(1.0)
+  stock_requisition  stock_requisition[]
+  stock_remain       stock_remain[]
+}
+
+model stock_requisition {
+  id Int @id @unique @default(autoincrement())
+
+  material_variant   materialVariant @relation(fields: [material_variantId], references: [id], onDelete: Cascade)
+  material_variantId Int
+  quantity           Int
+  base_quantity      Int
+  price_kip          Float?
+  sell_price_kip     Float?
+  price_bath         Float?
+  sell_price_bath    Float?
+  date               DateTime
+  branch             branch          @relation(fields: [branchId], references: [id])
+  branchId           Int
+
+  @@unique([material_variantId, date, branchId])
+}
+
+model stock_remain {
+  id         Int @id @unique @default(autoincrement())
+  count      Int
+  base_count Int
+
+  material_variant   materialVariant @relation(fields: [material_variantId], references: [id])
+  material_variantId Int
+}
+
+model calendar_order {
+  id             String       @id @default(uuid())
+  title          String
+  supplier_spc   supplier_spc @relation(fields: [supplier_spcId], references: [id])
+  supplier_spcId String
+  description    String?      @db.Text
+  po_link        String?
+  // Milestone Dates
+  plan_date      DateTime // The date shown on the calendar grid
+  payment_date   DateTime
+  delivery_date  DateTime
+
+  // Tracking Status
+  payment_status  String @default("pending")
+  delivery_status String @default("pending")
+
+  created_at     DateTime     @default(now())
+  updated_at     DateTime     @updatedAt
+  staff_office   staff_office @relation(fields: [staff_officeId], references: [id])
+  staff_officeId Int
+
+  @@index([plan_date])
+}
+
+model supplier_spc {
+  id           String           @id @default(uuid())
+  name         String           @unique
+  image        String?
+  contact_name String?
+  phone        String?
+  address      String?          @db.Text
+  category     String?
+  rating       Int              @default(5)
+  orders       calendar_order[]
+  material     material[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum Role {
+  ADMIN
+  STAFF_SPC
+  STAFF_TK
+  STAFF_WH
+  BARISTAR
+}
