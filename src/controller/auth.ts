@@ -42,6 +42,7 @@ export const login = async (req: Request, res: Response): Promise<Response> => {
       sameSite: isProd ? "none" : "lax",
       maxAge: 20 * 60 * 60 * 1000,
       path: "/",
+      domain: ".treekoff.store",
     });
 
     return res.status(200).json({
