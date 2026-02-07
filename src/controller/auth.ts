@@ -38,8 +38,6 @@ export const login = async (req: Request, res: Response): Promise<Response> => {
 
     res.cookie("session", token, {
       httpOnly: true,
-      // If we are in production (HTTPS), use Secure/None.
-      // If local (HTTP), use false/Lax.
       secure: isProd,
       sameSite: isProd ? "none" : "lax",
       maxAge: 20 * 60 * 60 * 1000,
