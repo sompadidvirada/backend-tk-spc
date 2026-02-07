@@ -4,10 +4,10 @@ import jwt from "jsonwebtoken";
 
 export const login = async (req: Request, res: Response): Promise<Response> => {
   try {
-    const { phoen_number, password } = req.body;
+    const { phone_number, password } = req.body;
 
     const checkStaff = await prisma.staff_office.findUnique({
-      where: { phonenumber: phoen_number },
+      where: { phonenumber: phone_number },
       include: {
         branch: { select: { name: true } },
       },
