@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { checkStaffPassword, createStaffBaristar, createStaffOffice, deleteStaff, getAllStaff, updateAvailableStaff, updateStaffOffice, updateSTaffRole, updateUserProfile } from "../controller/staff_office.js";
+import { checkStaffPassword, createStaffBaristar, createStaffOffice, deleteStaff, getAllStaff, updateAvailableStaff, updateBranchStaff, updateStaffOffice, updateSTaffRole, updateUserProfile } from "../controller/staff_office.js";
 import { verifyTokenAndRole } from "../middleware/authmiddleware.js";
 import multer from "multer";
 import multerS3 from "multer-s3";
@@ -35,7 +35,7 @@ router.put("/updateavailablestaff/:id", verifyTokenAndRole(["ADMIN"]), updateAva
 router.post("/checkpasswordstaff", verifyTokenAndRole(["ADMIN","STAFF_SPC", "STAFF_WH"]), checkStaffPassword)
 router.post("/deletestaff", verifyTokenAndRole(["ADMIN"]), deleteStaff)
 router.post("/createstaffbaristar", verifyTokenAndRole(["ADMIN", "STAFF_SPC", "STAFF_WH"]), upload.single("image"), createStaffBaristar)
-
+router.put("/updatebranchstaff/:id", verifyTokenAndRole(["ADMIN","STAFF_SPC"]), updateBranchStaff)
 router.put("/updateprofilestaff/:id", verifyTokenAndRole(["ADMIN", "STAFF_SPC", "STAFF_WH"]), upload.single("image"), updateUserProfile)
 
 export default router

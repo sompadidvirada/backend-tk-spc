@@ -64,10 +64,10 @@ export const createStaffBaristar = async (
 ): Promise<Response> => {
   try {
     console.log(req.body);
-    const { name, phonenumber, birthdate } = req.body;
+    const { name, phonenumber, birthdate, branchId } = req.body;
     const file = req.file as any;
     const imageUrl = file ? file.location : null;
-    if (!name || !phonenumber) {
+    if (!name || !phonenumber || !branchId) {
       return res.status(400).json({ message: `emty data to create` });
     }
 
@@ -87,6 +87,7 @@ export const createStaffBaristar = async (
         role: "BARISTAR",
         birthdate: birthdate ?? null,
         image: imageUrl,
+        branchId: Number(branchId),
       },
     });
     return res.status(200).json({ message: `create baristar success.` });
@@ -178,13 +179,46 @@ export const getAllStaff = async (
 ): Promise<Response> => {
   try {
     const staff = await prisma.staff_office.findMany({
-      orderBy: { id: "asc" }, // Sorted by name
+      orderBy: { id: "asc" },
+      include: {
+        branch: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+      },
     });
     return res.status(200).json(staff);
   } catch (err) {
     console.log(err);
     return res.status(500).json({ message: `server error.` });
   }
+};
+
+export const updateBranchStaff = async (
+  req: Request,
+  res: Response,
+): Promise<Response> => {
+  const { branchId } = req.body;
+  const { id } = req.params;
+
+  if (!id || !branchId){
+    return res.status(400).json({ message: `emty value.`})
+  }
+    try {
+      const ress = await prisma.staff_office.update({
+        where: {
+          id: Number(id)
+        }, data: {
+          branchId: Number(branchId)
+        }
+      })
+      return res.status(200).json({ message: `Update branch staff success.`})
+    } catch (err) {
+      console.log(err);
+      return res.status(500).json({ message: `server error.` });
+    }
 };
 
 export const updateAvailableStaff = async (
