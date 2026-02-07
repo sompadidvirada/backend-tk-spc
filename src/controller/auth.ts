@@ -4,7 +4,7 @@ import jwt from "jsonwebtoken";
 
 export const login = async (req: Request, res: Response): Promise<Response> => {
   try {
-    const { phoen_number, password } = req.body; // Check if this matches your frontend "phone_number"
+    const { phoen_number, password } = req.body;
 
     const checkStaff = await prisma.staff_office.findUnique({
       where: { phonenumber: phoen_number },
@@ -21,26 +21,35 @@ export const login = async (req: Request, res: Response): Promise<Response> => {
       return res.status(403).json({ message: "ບັນຊີນີ້ຖືກລະງັບການໃຊ້ງານແລ້ວ" });
     }
 
-    // Aligned with your Zustand Staff_Deatil interface
     const payload = {
-      id: checkStaff.id, 
+      id: checkStaff.id,
       name: checkStaff.name,
       branchId: checkStaff.branchId,
       branch_name: checkStaff.branch?.name || null,
-      phone_number: checkStaff.phonenumber, // Fixed typo from phoen_number
+      phone_number: checkStaff.phonenumber,
       role: checkStaff.role,
       image: checkStaff.image,
-      birthdate: checkStaff.birthdate, 
+      birthdate: checkStaff.birthdate,
     };
 
-
     const token = jwt.sign(payload, process.env.SECRET!, { expiresIn: "20h" });
-    
-    return res.status(200).json({ 
-        token, 
-        user: payload 
+
+    const isProd = process.env.NODE_ENV === "production";
+
+    res.cookie("session", token, {
+      httpOnly: true,
+      // If we are in production (HTTPS), use Secure/None.
+      // If local (HTTP), use false/Lax.
+      secure: isProd,
+      sameSite: isProd ? "none" : "lax",
+      maxAge: 20 * 60 * 60 * 1000,
+      path: "/",
     });
 
+    return res.status(200).json({
+      message: "Login successful",
+      user: payload,
+    });
   } catch (err) {
     console.error(err);
     return res.status(500).json({ message: "Server error" });

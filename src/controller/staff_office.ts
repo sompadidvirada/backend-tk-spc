@@ -347,10 +347,19 @@ export const updateUserProfile = async (
     };
 
     const token = jwt.sign(payload, process.env.SECRET!, { expiresIn: "20h" });
+
+    const isProd = process.env.NODE_ENV === "production";
+    res.cookie("session", token, {
+      httpOnly: true,
+      secure: isProd,
+      sameSite: isProd ? "none" : "lax",
+      maxAge: 20 * 60 * 60 * 1000,
+      path: "/",
+    });
+
     return res.status(200).json({
-      token,
       message: "ອັບເດດໂປຮໄຟລ໌ສຳເລັດ!",
-      user:payload
+      user: payload,
     });
   } catch (err) {
     console.log(err);
