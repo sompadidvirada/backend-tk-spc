@@ -70,6 +70,8 @@ export const createStaffBaristar = async (
     if (!name || !phonenumber || !branchId) {
       return res.status(400).json({ message: `emty data to create` });
     }
+    const normalizeDate = birthdate ? new Date(birthdate) : null;
+    normalizeDate?.setUTCHours(0, 0, 0, 0);
 
     const checkPhone = await prisma.staff_office.findUnique({
       where: {
@@ -85,7 +87,7 @@ export const createStaffBaristar = async (
         name,
         phonenumber,
         role: "BARISTAR",
-        birthdate: birthdate ?? null,
+        birthdate: normalizeDate,
         image: imageUrl,
         branchId: Number(branchId),
       },
@@ -203,22 +205,23 @@ export const updateBranchStaff = async (
   const { branchId } = req.body;
   const { id } = req.params;
 
-  if (!id || !branchId){
-    return res.status(400).json({ message: `emty value.`})
+  if (!id || !branchId) {
+    return res.status(400).json({ message: `emty value.` });
   }
-    try {
-      const ress = await prisma.staff_office.update({
-        where: {
-          id: Number(id)
-        }, data: {
-          branchId: Number(branchId)
-        }
-      })
-      return res.status(200).json({ message: `Update branch staff success.`})
-    } catch (err) {
-      console.log(err);
-      return res.status(500).json({ message: `server error.` });
-    }
+  try {
+    const ress = await prisma.staff_office.update({
+      where: {
+        id: Number(id),
+      },
+      data: {
+        branchId: Number(branchId),
+      },
+    });
+    return res.status(200).json({ message: `Update branch staff success.` });
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({ message: `server error.` });
+  }
 };
 
 export const updateAvailableStaff = async (
