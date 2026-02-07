@@ -15,6 +15,7 @@ declare global {
 
 export const verifyTokenAndRole = (allowedRoles: string[]) => {
   return (req: Request, res: Response, next: NextFunction) => {
+    console.log(req.cookies)
     const token = req.cookies.session;
     if (!token) {
       return res
