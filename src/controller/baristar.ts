@@ -75,15 +75,20 @@ export const updateBaristarProfile = async (
       birth_date: updatedStaff.birthdate,
     };
 
-    // Sign a new token
-    const newToken = jwt.sign(payload, process.env.SECRET!, {
-      expiresIn: "20h",
+    const token = jwt.sign(payload, process.env.SECRET!, { expiresIn: "20h" });
+
+    const isProd = process.env.NODE_ENV === "production";
+
+    res.cookie("session", token, {
+      httpOnly: true,
+      secure: isProd,
+      sameSite: isProd ? "none" : "lax",
+      maxAge: 20 * 60 * 60 * 1000,
+      path: "/",
     });
 
-    // Return the updated user AND the new token
     return res.status(200).json({
       message: "Update success",
-      token: newToken,
       user: updatedStaff,
     });
   } catch (err) {
@@ -128,13 +133,14 @@ export const insertBakeryReport = async (
         bakery_detailId: Number(bakery_detailId),
         branchId: Number(branchId),
         staff_officeId: Number(staff_officeId),
-      }, include: {
+      },
+      include: {
         branch: {
           select: {
-            name: true
-          }
-        }
-      }
+            name: true,
+          },
+        },
+      },
     });
     if (!reportCreate) {
       return res
@@ -175,7 +181,7 @@ export const getHistoryReport = async (
 ): Promise<Response> => {
   // Get branchId, page, and limit from query or body
   // Using query params is standard for GET/Fetch requests
-  const { branchId, page = 1, limit = 5 } = req.body; 
+  const { branchId, page = 1, limit = 5 } = req.body;
 
   if (!branchId) {
     return res.status(400).json({ message: "ກະລຸນາລະບຸສາຂາ (branchId)" });
@@ -200,11 +206,11 @@ export const getHistoryReport = async (
             select: {
               name: true,
               image: true,
-            }
+            },
           },
         },
         orderBy: {
-          id: 'desc', // Show newest reports first
+          id: "desc", // Show newest reports first
         },
         skip: skip,
         take: take,
@@ -220,7 +226,7 @@ export const getHistoryReport = async (
         totalItems: totalCount,
         totalPages: Math.ceil(totalCount / take),
         currentPage: Number(page),
-      }
+      },
     });
   } catch (err) {
     console.log(err);
