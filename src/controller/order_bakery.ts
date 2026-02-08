@@ -392,9 +392,9 @@ export const getBakeryOrderToPrint = async (
   req: Request,
   res: Response,
 ): Promise<Response> => {
-  const { order_at } = req.body;
+  const { order_at, supplyerId } = req.body;
 
-  if (!order_at) {
+  if (!order_at || !supplyerId) {
     return res.status(400).json({ message: "Please provide order_at date." });
   }
 
@@ -406,6 +406,9 @@ export const getBakeryOrderToPrint = async (
     const orders = await prisma.order_bakery.findMany({
       where: {
         order_at: normalizeDate,
+        bakery_detail: {
+          supplyer_bakeryId: Number(supplyerId)
+        }
       },
       include: {
         branch: { select: { id: true, name: true } },
