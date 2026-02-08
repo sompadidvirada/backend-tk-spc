@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { verifyTokenAndRole } from "../middleware/authmiddleware.js";
-import { getHistoryReport, insertBakeryReport, updateBaristarProfile } from "../controller/baristar.js";
+import { getHistoryReport, insertBakeryReport, updateBaristarProfile, updatePassword } from "../controller/baristar.js";
 import multer from "multer";
 import multerS3 from "multer-s3";
 import { S3Client } from "@aws-sdk/client-s3";
@@ -41,6 +41,7 @@ const uploadImageReport = multer({
 
 
 router.put("/updatebaristar/:id", verifyTokenAndRole(["ADMIN", "BARISTAR"]), uploadProfile.single("image"), updateBaristarProfile)
+router.patch("/updatepasswordbaristar/:id", verifyTokenAndRole(["ADMIN", "BARISTAR"]), updatePassword)
 router.post("/reportbaristar", verifyTokenAndRole(["ADMIN", "STAFF_SPC", "BARISTAR"]),uploadImageReport.array("images"), insertBakeryReport)
 router.post("/getreporthistory", verifyTokenAndRole(["ADMIN", "STAFF_SPC", "BARISTAR"]), getHistoryReport)
 

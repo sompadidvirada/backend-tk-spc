@@ -23,6 +23,7 @@ export const updateBaristarProfile = async (
   req: Request,
   res: Response,
 ): Promise<Response> => {
+  console.log(req.body);
   const { name } = req.body;
   const { id } = req.params;
   const file = req.file as any;
@@ -90,6 +91,38 @@ export const updateBaristarProfile = async (
       message: "Update success",
       user: updatedStaff,
     });
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({ message: `server error.` });
+  }
+};
+
+export const updatePassword = async (
+  req: Request,
+  res: Response,
+): Promise<Response> => {
+  const { id } = req.params;
+  const {old_password, new_password} = req.body
+  if (!id || !old_password || !new_password) {
+    return res.status(400).json({ message: `emty value` });
+  }
+  try {
+    const check = await prisma.staff_office.findUnique({
+      where: {
+        id: Number(id)
+      }
+    })
+    if(check?.password !== old_password) {
+      return res.status(404).json({ message: `ລະຫັດຜ່ານເກົ່າບໍ່ຖືກຕ້ອງ`})
+    }
+    const ress = await prisma.staff_office.update({
+      where: {
+        id: Number(id)
+      }, data: {
+        password: new_password
+      }
+    })
+    return res.status(200).json({ message: 'update password success.'});
   } catch (err) {
     console.log(err);
     return res.status(500).json({ message: `server error.` });
