@@ -547,17 +547,25 @@ export const getAvailableBakery = async (
   res: Response,
 ): Promise<Response> => {
   try {
-    const { branchId } = req.body;
+    const { branchId, supplyerId } = req.body;
 
-    const data = await prisma.bakery_detail.findMany({
-      where: {
-        // Find bakeries where 'none' of the branch relations match this branchId
-        available_bakery_branch: {
-          some: {
-            branchId: Number(branchId),
-          },
+    console.log(req.body)
+    const whereClause: any = {
+      available_bakery_branch: {
+        some: {
+          branchId: Number(branchId),
         },
       },
+    };
+
+    // 2. Conditionally add supplyerId if it exists
+    if (supplyerId) {
+      whereClause.supplyer_bakeryId = Number(supplyerId);
+    }
+
+    // 3. Execute the query
+    const data = await prisma.bakery_detail.findMany({
+      where: whereClause,
     });
 
     return res.status(200).json({ data });

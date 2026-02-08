@@ -85,38 +85,62 @@ export const getBakeryHistory_L1_L2_L3 = async (
   req: Request,
   res: Response,
 ): Promise<Response> => {
-  const { branchId, order_at } = req.body;
+  const { branchId, order_at, supplyerId } = req.body;
 
-  if (!branchId || !order_at) {
+  if (!branchId || !order_at || !supplyerId) {
     return res
       .status(400)
       .json({ message: "branchId and order_at are required." });
   }
+  const localDate = startOfDay(toZonedTime(order_at, timeZone));
+  const dayName = format(localDate, "EEEE");
+  if (dayName !== "Wednesday" && dayName !== "Saturday") {
+    return res
+      .status(400)
+      .json({ message: "Only Wednesday or Saturday allowed." });
+  }
 
   try {
-    const localDate = startOfDay(toZonedTime(order_at, timeZone));
-    const dayName = format(localDate, "EEEE");
-
-    if (dayName !== "Wednesday" && dayName !== "Saturday") {
-      return res
-        .status(400)
-        .json({ message: "Only Wednesday or Saturday allowed." });
-    }
-
+    const checkSupplyer = await prisma.supplyer_bakery.findUnique({
+      where: {
+        id: Number(supplyerId),
+      },
+    });
     const weekRanges: { start: Date; end: Date }[] = [];
     const createRange = (s: number, e: number) => ({
-      start: startOfDay(subDays(localDate, s)), // e.g., 00:00:00
-      end: endOfDay(subDays(localDate, e)), // e.g., 23:59:59
+      start: startOfDay(subDays(localDate, s)),
+      end: endOfDay(subDays(localDate, e)),
     });
 
-    if (dayName === "Wednesday") {
-      weekRanges.push(createRange(4, 1), createRange(7, 5), createRange(11, 8));
-    } else {
-      weekRanges.push(createRange(3, 1), createRange(7, 4), createRange(10, 8));
+    if (checkSupplyer?.order_range === 3) {
+      if (dayName === "Wednesday") {
+        weekRanges.push(
+          createRange(4, 1),
+          createRange(7, 5),
+          createRange(11, 8),
+        );
+      } else {
+        weekRanges.push(
+          createRange(3, 1),
+          createRange(7, 4),
+          createRange(10, 8),
+        );
+      }
+    } else if (checkSupplyer?.order_range === 7) {
+      weekRanges.push(
+        createRange(7, 1),
+        createRange(14, 8),
+        createRange(22, 15),
+      );
     }
 
     const activeItems = await prisma.available_bakery_branch.findMany({
-      where: { branchId: Number(branchId) },
+      where: {
+        branchId: Number(branchId),
+        bakery_detail: {
+          supplyer_bakeryId: Number(supplyerId),
+        },
+      },
       select: { bakery_detailId: true },
     });
 
@@ -386,12 +410,12 @@ export const getBakeryOrderToPrint = async (
       },
       include: {
         branch: { select: { id: true, name: true } },
-        bakery_detail: { 
-          select: { 
-            id: true, 
+        bakery_detail: {
+          select: {
+            id: true,
             name: true,
-            bakeryCategory: { select: { name: true } } 
-          } 
+            bakeryCategory: { select: { name: true } },
+          },
         },
       },
       orderBy: [{ branch: { id: "asc" } }, { bakery_detail: { id: "asc" } }],
