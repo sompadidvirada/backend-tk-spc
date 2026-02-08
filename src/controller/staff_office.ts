@@ -322,6 +322,40 @@ export const deleteStaff = async (
   }
 };
 
+export const updateStaffPassword = async (
+  req: Request,
+  res: Response,
+): Promise<Response> => {
+  const { id } = req.params;
+  const { old_password, new_password } = req.body;
+  if (!id || !old_password || !new_password) {
+    return res.status(400).json({ message: `emty value.` });
+  }
+  try {
+    const check = await prisma.staff_office.findUnique({
+      where: {
+        id: Number(id),
+      },
+    });
+
+    if (check?.password !== old_password) {
+      return res.status(404).json({ message: `ລະຫັດຜ່ານເກົ່າບໍ່ຖືກຕ້ອງ.` });
+    }
+    const ress = await prisma.staff_office.update({
+      where: {
+        id: Number(id),
+      },
+      data: {
+        password: new_password,
+      },
+    });
+    return res.status(200).json({ message: `ແກ້ໄຂລະຫັດຜ່ານສຳເລັດ.` });
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({ message: `server error.` });
+  }
+};
+
 // EDIT PROFILE FOR USER SELF EIDT
 
 export const updateUserProfile = async (
