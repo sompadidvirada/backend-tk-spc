@@ -18,7 +18,6 @@ export const insertMaterialRequisition = async (
     branchId,
   } = req.body;
 
-  console.log(req.body);
 
   const requiredFields = { material_variantId, quantity, date, branchId };
   for (const [key, value] of Object.entries(requiredFields)) {
@@ -194,8 +193,6 @@ export const getStockRequisitionReport = async (
 ) => {
   try {
     const { startDate, endDate, branchId } = req.body; // e.g., 2024-05-20, 3
-    console.log(req.body);
-
     const start = new Date(startDate);
     const end = new Date(endDate);
     start.setUTCHours(0, 0, 0, 0);
@@ -404,9 +401,6 @@ export const updateStockRemain = async (
   if (!id || !count || !base_count_variant || !material_variantId) {
     return res.status(400).json({ message: `emty value.` });
   }
-
-  console.log(req.body);
-
   try {
     await prisma.stock_remain.deleteMany({
       where: {

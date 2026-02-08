@@ -63,7 +63,6 @@ export const createStaffBaristar = async (
   res: Response,
 ): Promise<Response> => {
   try {
-    console.log(req.body);
     const { name, phonenumber, birthdate, branchId } = req.body;
     const file = req.file as any;
     const imageUrl = file ? file.location : null;

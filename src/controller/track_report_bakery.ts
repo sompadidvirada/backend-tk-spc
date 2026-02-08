@@ -124,8 +124,6 @@ export const updateStatusReport = async (
 ): Promise<Response> => {
   const {id} =req.params
   const {status} = req.body
-  console.log(req.params)
-  console.log(req.body)
   if(!id || status === undefined) {
     return res.status(400).json({ message: `emty value`})
   }

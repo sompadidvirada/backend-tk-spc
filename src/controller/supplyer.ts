@@ -91,7 +91,6 @@ export const editSupplyer = async (
       };
       const command = new DeleteObjectCommand(params);
       await s3.send(command);
-      console.log("Deleted old image:", checkSupplyer.image);
     }
     updateData.image = imageUrl;
   }
@@ -149,7 +148,6 @@ export const createSupplyerSpc = async (
   res: Response,
 ): Promise<Response> => {
   try {
-    console.log(req.body);
     const { name, contact_name, phone, address, category } = req.body;
 
     const file = req.file as any;

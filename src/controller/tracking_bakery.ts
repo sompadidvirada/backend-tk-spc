@@ -10,7 +10,6 @@ export const insertTracksell = async (
   try {
     const { bakeryId, branchId, sold_at, quantity, price, sell_price } =
       req.body;
-    console.log(req.body);
     if (
       !bakeryId ||
       !branchId ||
@@ -88,7 +87,7 @@ export const insertTracksellMany = async (
       count: result.count,
     });
   } catch (err) {
-    console.log();
+    console.log(err);
     return res.status(500).json({ message: `server error.` });
   }
 };
@@ -549,7 +548,6 @@ export const getAvailableBakery = async (
   try {
     const { branchId, supplyerId } = req.body;
 
-    console.log(req.body)
     const whereClause: any = {
       available_bakery_branch: {
         some: {

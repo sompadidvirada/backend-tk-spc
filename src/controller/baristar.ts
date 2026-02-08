@@ -51,8 +51,7 @@ export const updateBaristarProfile = async (
         Key: key,
       };
       const command = new DeleteObjectCommand(params);
-      const deletImageS3 = await s3.send(command);
-      console.log("Deleted old image:", deletImageS3);
+      await s3.send(command);
     }
     updateData.image = imageUrl;
   }

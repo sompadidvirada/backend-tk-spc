@@ -86,8 +86,7 @@ export const updateBakery = async (
           Key: key,
         };
         const command = new DeleteObjectCommand(params);
-        const deletImageS3 = await s3.send(command);
-        console.log("Deleted old image:", check.image);
+         await s3.send(command);
       }
       updateData.image = imageURL;
     }
@@ -147,7 +146,6 @@ export const deleteBakery = async (
       };
       const command = new DeleteObjectCommand(params);
       await s3.send(command);
-      console.log("Deleted old image:", check.image);
     }
     await prisma.bakery_detail.delete({
       where: {
@@ -168,9 +166,6 @@ export const updateStatus = async (
   try {
     const { status } = req.body;
     const { id } = req.params;
-
-    console.log(req.body);
-    console.log(id);
 
     if (!id || !status) {
       return res.status(400).json({ message: `emty value.` });
@@ -276,7 +271,6 @@ export const createCategoryBakery = async (
 ): Promise<Response> => {
   try {
     const { name } = req.body;
-    console.log();
     if (!name) {
       return res.status(400);
     }

@@ -185,7 +185,6 @@ export const getBakeryHistory_L1_L2_L3 = async (
       }
       return itemData;
     });
-
     return res.status(200).json(finalResults);
   } catch (err) {
     console.error("Bakery History Error:", err);
@@ -569,7 +568,6 @@ export const getSendAndExp = async (
   res: Response,
 ): Promise<Response> => {
   const { branchId, date } = req.body;
-  console.log(req.body);
 
   if (!branchId || !date) {
     return res.status(400).json({ message: "Empty value" });

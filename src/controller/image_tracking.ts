@@ -101,7 +101,6 @@ export const deleteImageTrack = async (
     };
     const command = new DeleteObjectCommand(params);
     await s3.send(command);
-    console.log("Deleted old image:", check?.image_name);
 
     return res.status(200).json(check);
   } catch (err) {
