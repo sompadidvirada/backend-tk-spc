@@ -3,7 +3,7 @@ import multer from "multer";
 import multerS3 from "multer-s3";
 import { S3Client } from "@aws-sdk/client-s3";
 import { verifyTokenAndRole } from "../middleware/authmiddleware.js";
-import { createSupplyer, createSupplyerSpc, deleteSupplyer, editSupplyer, getAllSupplyer, getAllSupplyerSpc, updateSupllyerSpc } from "../controller/supplyer.js";
+import { createSupplyer, createSupplyerSpc, deleteSupplyer, deleteSupplyerSpc, editSupplyer, getAllSupplyer, getAllSupplyerSpc, updateSupllyerSpc } from "../controller/supplyer.js";
 
 const s3 = new S3Client({
   region: process.env.AWS_REGION!,
@@ -36,7 +36,7 @@ router.delete("/deletesupplyer/:id", verifyTokenAndRole(["ADMIN"]), deleteSupply
 router.post("/createsupplyerspc", verifyTokenAndRole(["ADMIN", "STAFF_SPC", "STAFF_WH"]),upload.single("image"), createSupplyerSpc)
 router.get("/getallsupplyerspc", verifyTokenAndRole(["ADMIN", "STAFF_SPC", "STAFF_WH"]), getAllSupplyerSpc)
 router.put("/updatesupplyerspc/:id", verifyTokenAndRole(["ADMIN", "STAFF_SPC", "STAFF_WH"]), upload.single("image"), updateSupllyerSpc)
-
+router.delete("/deletesupleryspc/:id", verifyTokenAndRole(["ADMIN","STAFF_SPC"]), deleteSupplyerSpc)
 
 
 

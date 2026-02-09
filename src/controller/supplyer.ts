@@ -253,3 +253,24 @@ export const updateSupllyerSpc = async (
     return res.status(500).json({ message: `server error.` });
   }
 };
+
+export const deleteSupplyerSpc = async (
+  req: Request,
+  res: Response,
+): Promise<Response> => {
+  const {id} = req.params
+  if(!id) {
+    return res.status(400).json({ message: `emty value`})
+  }
+  try {
+    await prisma.supplier_spc.delete({
+      where: {
+        id: String(id)
+      }
+    })
+    return res.status(200).json({message:"delete supplyer spc success."});
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({ message: `server error` });
+  }
+};
