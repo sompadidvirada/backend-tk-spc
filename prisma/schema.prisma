@@ -262,7 +262,7 @@ model stock_remain {
 model calendar_order {
   id             String       @id @default(uuid())
   title          String
-  supplier_spc   supplier_spc @relation(fields: [supplier_spcId], references: [id])
+  supplier_spc   supplier_spc @relation(fields: [supplier_spcId], references: [id], onDelete: Cascade)
   supplier_spcId String
   description    String?      @db.Text
   po_link        String?
@@ -277,7 +277,7 @@ model calendar_order {
 
   created_at     DateTime     @default(now())
   updated_at     DateTime     @updatedAt
-  staff_office   staff_office @relation(fields: [staff_officeId], references: [id])
+  staff_office   staff_office @relation(fields: [staff_officeId], references: [id], onDelete: Cascade)
   staff_officeId Int
 
   @@index([plan_date])
