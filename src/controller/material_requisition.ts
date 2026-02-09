@@ -18,7 +18,6 @@ export const insertMaterialRequisition = async (
     branchId,
   } = req.body;
 
-
   const requiredFields = { material_variantId, quantity, date, branchId };
   for (const [key, value] of Object.entries(requiredFields)) {
     if (value === undefined || value === null || value === "") {
@@ -58,7 +57,7 @@ export const getAllRequisition = async (
   req: Request,
   res: Response,
 ): Promise<Response> => {
-  const { date } = req.body;
+  const { date, branchId } = req.body;
   if (!date) {
     return res.status(400).json({ message: `emty value` });
   }
@@ -68,6 +67,7 @@ export const getAllRequisition = async (
     const ress = await prisma.stock_requisition.findMany({
       where: {
         date: normalizeDate,
+        branchId: Number(branchId)
       },
       select: {
         id: true,
@@ -141,7 +141,7 @@ export const uploadStockRequisition = async (
   res: Response,
 ): Promise<Response> => {
   try {
-    const requisitions = req.body;
+    const { requisitions, branchId } = req.body;
 
     if (!requisitions || !Array.isArray(requisitions)) {
       return res.status(400).json({ message: "Invalid data format" });
@@ -155,6 +155,7 @@ export const uploadStockRequisition = async (
               date: new Date(item.date),
               branchId: item.branchId,
             },
+            branchId: Number(branchId)
           },
           update: {
             quantity: item.quantity,
