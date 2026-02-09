@@ -42,8 +42,7 @@ app.use(
     origin: [
       "https://treekoff.store",
       "https://www.treekoff.store",
-      "http://localhost:3000",
-      "http://192.168.1.19:3000"
+      "http://192.168.1.40:3000"
     ],
     credentials: true,
   }),
