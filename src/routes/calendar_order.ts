@@ -45,7 +45,7 @@ router.patch(
 );
 router.patch(
   "/updatedeliverydate/:id",
-  verifyTokenAndRole(["ADMIN", "SATFF_SPC", "STAFF"]),
+  verifyTokenAndRole(["ADMIN", "STAFF_SPC", "STAFF_WH"]),
   updateCalendarDelivery,
 );
 
