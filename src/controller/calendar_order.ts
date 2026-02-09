@@ -175,3 +175,58 @@ export const updateCalendarStatus = async (
     return res.status(500).json({ message: "Error updating status" });
   }
 };
+
+export const updateCalendarPayment = async (
+  req: Request,
+  res: Response,
+): Promise<Response> => {
+  const { id } = req.params;
+  const { payment_date } = req.body;
+
+  if (!id || !payment_date) {
+    return res.status(400).json({ message: `emty value` });
+  }
+  const normalizeDate = new Date(payment_date);
+  normalizeDate.setUTCHours(0, 0, 0, 0);
+
+  try {
+    const ress = await prisma.calendar_order.update({
+      where: {
+        id: String(id),
+      },
+      data: {
+        payment_date: normalizeDate,
+      },
+    });
+    return res.status(200).json(ress);
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({ message: `server error` });
+  }
+};
+
+export const updateCalendarDelivery = async (
+  req: Request,
+  res: Response,
+): Promise<Response> => {
+  const {id} =req.params
+  const {delivery_date} = req.body
+  if(!id || !delivery_date) {
+    return res.status(400).json({ message: `emty value`})
+  }
+  const normalizeDate = new Date(delivery_date)
+  normalizeDate.setUTCHours(0,0,0,0)
+  try {
+    const ress = await prisma.calendar_order.update({
+      where: {
+        id: String(id)
+      }, data: {
+        delivery_date: normalizeDate
+      }
+    })
+    return res.status(200).json(ress);
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({ message: `server error` });
+  }
+};

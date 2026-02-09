@@ -4,7 +4,9 @@ import {
   createCalendarOrder,
   deleteCalendarOrderSpc,
   getAllCalendarOrderSpc,
+  updateCalendarDelivery,
   updateCalendarOrderDate,
+  updateCalendarPayment,
   updateCalendarStatus,
 } from "../controller/calendar_order.js";
 const router = Router();
@@ -34,6 +36,17 @@ router.patch(
   "/updatestatuscalendarorderspc/:id",
   verifyTokenAndRole(["ADMIN", "STAFF_SPC", "STAFF_WH"]),
   updateCalendarStatus,
+);
+
+router.patch(
+  "/updatepaymentdate/:id",
+  verifyTokenAndRole(["ADMIN", "STAFF_SPC", "STAFF_WH"]),
+  updateCalendarPayment,
+);
+router.patch(
+  "/updatedeliverydate/:id",
+  verifyTokenAndRole(["ADMIN", "SATFF_SPC", "STAFF"]),
+  updateCalendarDelivery,
 );
 
 export default router;
