@@ -173,6 +173,17 @@ export const deleteAllTrackSell = async (
     return res.status(400).json({ message: `emty value.` });
   }
   const normalizedDate = new Date(date);
+
+  const today = new Date();
+  const sevendayAgo = new Date();
+  sevendayAgo.setDate(today.getDate() - 3);
+
+  if (normalizedDate < sevendayAgo) {
+    return res
+      .status(405)
+      .json({ message: `ບໍ່ສາມາດລົບລາຍການທີຜ່ານໄປແລ້ວ 3 ວັນໄດ້` });
+  }
+
   normalizedDate.setUTCHours(0, 0, 0, 0);
   try {
     await prisma.track_bakery_sell.deleteMany({
@@ -365,6 +376,15 @@ export const deleteAllTrackSend = async (
     return res.status(400).json({ message: `emty value` });
   }
   const normalizeDate = new Date(date);
+
+  const today = new Date();
+  const sevendayAgo = new Date();
+  sevendayAgo.setDate(today.getDate() - 7);
+
+  if (normalizeDate < sevendayAgo) {
+    return res.status(405).json({ message: `ບໍ່ສາມາດລົບຍ້ອນຫຼັງການ 7 ວັນໄດ້` });
+  }
+
   normalizeDate.setUTCHours(0, 0, 0, 0);
   try {
     await prisma.track_bakery_send.deleteMany({
