@@ -420,7 +420,7 @@ export const getBakeryOrderToPrint = async (
           },
         },
       },
-      orderBy: [{ branch: { id: "asc" } }, { bakery_detail: { id: "asc" } }],
+      orderBy: [{ branch: { id: "asc" } }, { bakery_detail: { bakery_categoryId: "asc" } }],
     });
 
     // 2. Identify all unique branches and bakery details present in the orders
