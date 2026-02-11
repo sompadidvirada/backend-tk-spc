@@ -61,7 +61,7 @@ export const addPhonNumberBranch = async (
   const { phone } = req.body;
   const { id } = req.params;
 
-  if (!id || !phone) {
+  if (!id) {
     return res.status(400).json({ message: `emty value.` });
   }
   try {
@@ -70,7 +70,7 @@ export const addPhonNumberBranch = async (
         id: Number(id),
       },
       data: {
-        phonenumber: phone,
+        phonenumber: phone ?? null,
       },
     });
     return res.status(200).json(ress);
