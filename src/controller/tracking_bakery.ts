@@ -46,8 +46,7 @@ export const insertTracksellMany = async (
   try {
     const { items } = req.body;
 
-
-    console.log(req.body)
+    console.log(req.body);
 
     if (!Array.isArray(items) || items.length === 0) {
       return res.status(400).json({ message: "empty data." });
@@ -57,12 +56,12 @@ export const insertTracksellMany = async (
       const { bakeryId, branchId, sold_at, quantity, price, sell_price } = item;
 
       if (
-        !bakeryId ||
-        !branchId ||
-        !sold_at ||
-        !quantity ||
-        !price ||
-        !sell_price
+        bakeryId == null ||
+        branchId == null ||
+        sold_at == null ||
+        quantity == null ||
+        price == null ||
+        sell_price == null
       ) {
         throw new Error("invalid item data");
       }
@@ -588,8 +587,8 @@ export const getAvailableBakery = async (
     const data = await prisma.bakery_detail.findMany({
       where: whereClause,
       orderBy: {
-        bakery_categoryId: "asc"
-      }
+        bakery_categoryId: "asc",
+      },
     });
 
     return res.status(200).json({ data });
