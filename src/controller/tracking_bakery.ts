@@ -46,8 +46,6 @@ export const insertTracksellMany = async (
   try {
     const { items } = req.body;
 
-    console.log(req.body);
-
     if (!Array.isArray(items) || items.length === 0) {
       return res.status(400).json({ message: "empty data." });
     }
