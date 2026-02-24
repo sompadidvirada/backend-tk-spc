@@ -407,8 +407,8 @@ export const getBakeryOrderToPrint = async (
       where: {
         order_at: normalizeDate,
         bakery_detail: {
-          supplyer_bakeryId: Number(supplyerId)
-        }
+          supplyer_bakeryId: Number(supplyerId),
+        },
       },
       include: {
         branch: { select: { id: true, name: true } },
@@ -420,18 +420,25 @@ export const getBakeryOrderToPrint = async (
           },
         },
       },
-      orderBy: [{ branch: { id: "asc" } }, { bakery_detail: { bakery_categoryId: "asc" } }],
+      orderBy: [
+        { branch: { id: "asc" } },
+        { bakery_detail: { bakery_categoryId: "asc" } },
+        { bakery_detail: { id: "asc" } },
+      ],
     });
 
     // 2. Identify all unique branches and bakery details present in the orders
     const branches = Array.from(
       new Map(orders.map((o) => [o.branch.id, o.branch])).values(),
-    );
+    ).sort((a, b) => a.id - b.id);
+    
     const bakeryItems = Array.from(
       new Map(
         orders.map((o) => [o.bakery_detail.id, o.bakery_detail]),
       ).values(),
-    );
+    ).sort((a, b) => {
+      return a.bakeryCategory.name.localeCompare(b.bakeryCategory.name);
+    });
 
     // 3. Build the Matrix (Pivot Table)
     const tableData = bakeryItems.map((bakery) => {
@@ -444,10 +451,11 @@ export const getBakeryOrderToPrint = async (
 
       // Fill in order_set for each branch
       branches.forEach((branch) => {
-        const order = orders.find(
-          (o) => o.bakery_detailId === bakery.id && o.branchId === branch.id,
-        );
-        const value = order ? order.order_set : 0;
+        const orderMap = new Map();
+        orders.forEach((o) => {
+          orderMap.set(`${o.bakery_detailId}_${o.branchId}`, o.order_set);
+        });
+        const value = orderMap.get(`${bakery.id}_${branch.id}`) || 0;
         row[`branch_${branch.id}`] = value;
         row.total += value;
       });
