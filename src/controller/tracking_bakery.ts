@@ -584,9 +584,7 @@ export const getAvailableBakery = async (
     // 3. Execute the query
     const data = await prisma.bakery_detail.findMany({
       where: whereClause,
-      orderBy: {
-        bakery_categoryId: "asc",
-      },
+      orderBy: [{ bakery_categoryId: "asc" }, { status: "asc" }],
     });
 
     return res.status(200).json({ data });
