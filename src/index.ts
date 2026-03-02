@@ -24,11 +24,17 @@ import track_report from "./routes/track_report_bakery.js";
 import material from "./routes/material.js";
 import material_variant from "./routes/material_requisition.js";
 import calendar_order from "./routes/calendar_order.js";
+import rateLimit from "express-rate-limit";
 /** ROUTE IMPORT */
 
 /** COFIGURATIONS */
 
 dotenv.config();
+const loginLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 5,                   // allow only 5 attempts
+  message: "Too many login attempts. Please try again later.",
+});
 
 const app = express();
 app.use(express.json());
@@ -58,14 +64,11 @@ const io = new Server(server, {
 
 app.set("io", io);
 
-app.get("/hello", (req, res) => {
-  res.send("hello route");
-});
 
 app.use("/branchs", branch);
 app.use("/managestaff", staff);
 app.use("/managebakery", bakery);
-app.use("/authentication", auth);
+app.use("/authentication",loginLimiter, auth);
 app.use("/managetracking", tracking);
 app.use("/managereportbakery", reportbakery);
 app.use("/dashboard", dashboard);
