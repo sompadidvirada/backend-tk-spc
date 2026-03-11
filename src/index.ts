@@ -32,7 +32,7 @@ import rateLimit from "express-rate-limit";
 dotenv.config();
 const loginLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 5,                   // allow only 5 attempts
+  max: 80,                   // allow only 5 attempts
   message: "Too many login attempts. Please try again later.",
 });
 
