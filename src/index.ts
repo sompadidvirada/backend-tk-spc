@@ -30,6 +30,7 @@ import rateLimit from "express-rate-limit";
 /** COFIGURATIONS */
 
 dotenv.config();
+
 const loginLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 80,                   // allow only 5 attempts
@@ -37,6 +38,7 @@ const loginLimiter = rateLimit({
 });
 
 const app = express();
+app.set('trust proxy', 1)
 app.use(express.json());
 app.use(helmet());
 app.use(helmet.crossOriginResourcePolicy({ policy: "cross-origin" }));
