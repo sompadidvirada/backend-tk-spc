@@ -103,12 +103,30 @@ export const updateBranch = async (
           province = ${province},
           location = ST_SetSRID(ST_MakePoint(${parseFloat(lng)}, ${parseFloat(lat)}), 4326)
         WHERE id = ${Number(id)}
-      `
+      `,
     ]);
 
     return res.status(200).json({ message: "ແກ້ໄຂສຳເລັດ" });
   } catch (err) {
     console.error(err);
     return res.status(500).json({ message: "Server error." });
+  }
+};
+
+export const deleteBranch = async (
+  req: Request,
+  res: Response,
+): Promise<Response> => {
+  const { id } = req.params;
+  try {
+    await prisma.branch.delete({
+      where: {
+        id: Number(id),
+      },
+    });
+    return res.status(200).json({ message: "delete the branch success."})
+  } catch (err) {
+    console.log(err)
+    return res.status(500).json({ message: "server error" });
   }
 };
