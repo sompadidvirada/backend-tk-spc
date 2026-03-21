@@ -91,7 +91,7 @@ model track_bakery_sell {
   sold_at         DateTime
   bakery_detail   bakery_detail @relation(fields: [bakery_detailId], references: [id], onDelete: Cascade)
   bakery_detailId Int
-  branch          branch        @relation(fields: [branchId], references: [id])
+  branch          branch        @relation(fields: [branchId], references: [id], onDelete: Cascade)
   branchId        Int
   price           Int
   sell_price      Int
@@ -105,7 +105,7 @@ model track_bakery_send {
   send_at         DateTime
   bakery_detail   bakery_detail @relation(fields: [bakery_detailId], references: [id], onDelete: Cascade)
   bakery_detailId Int
-  branch          branch        @relation(fields: [branchId], references: [id])
+  branch          branch        @relation(fields: [branchId], references: [id], onDelete: Cascade)
   branchId        Int
   price           Int
   sell_price      Int
@@ -119,7 +119,7 @@ model track_bakery_exp {
   exp_at          DateTime
   bakery_detail   bakery_detail @relation(fields: [bakery_detailId], references: [id], onDelete: Cascade)
   bakery_detailId Int
-  branch          branch        @relation(fields: [branchId], references: [id])
+  branch          branch        @relation(fields: [branchId], references: [id], onDelete: Cascade)
   branchId        Int
   price           Int
   sell_price      Int
@@ -135,7 +135,7 @@ model order_bakery {
 
   bakery_detail   bakery_detail @relation(fields: [bakery_detailId], references: [id], onDelete: Cascade)
   bakery_detailId Int
-  branch          branch        @relation(fields: [branchId], references: [id])
+  branch          branch        @relation(fields: [branchId], references: [id], onDelete: Cascade)
   branchId        Int
 
   @@unique([order_at, branchId, bakery_detailId])
@@ -146,7 +146,7 @@ model confirm_order_bakery {
   confirm_date         DateTime
   baristar_confirm_stt Boolean
   admin_confirm_stt    Boolean
-  branch               branch   @relation(fields: [branchId], references: [id])
+  branch               branch   @relation(fields: [branchId], references: [id], onDelete: Cascade)
   branchId             Int
 
   @@unique([branchId, confirm_date])
@@ -156,7 +156,7 @@ model track_image_bakery {
   id         Int      @id @unique @default(autoincrement())
   track_date DateTime
   image_name String
-  branch     branch   @relation(fields: [branchId], references: [id])
+  branch     branch   @relation(fields: [branchId], references: [id], onDelete: Cascade)
   branchId   Int
 }
 
@@ -244,7 +244,7 @@ model stock_requisition {
   price_bath         Float?
   sell_price_bath    Float?
   date               DateTime
-  branch             branch          @relation(fields: [branchId], references: [id])
+  branch             branch          @relation(fields: [branchId], references: [id], onDelete: Cascade)
   branchId           Int
 
   @@unique([material_variantId, date, branchId])
